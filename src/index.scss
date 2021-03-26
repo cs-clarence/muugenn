@@ -1,0 +1,11 @@
+html {
+  @apply bg-blue-100;
+  @apply dark:bg-gray-800;
+}
+
+* {
+  @apply dark:text-white;
+  @apply transition-colors;
+  @apply duration-150;
+  @apply ease-in-out;
+}
