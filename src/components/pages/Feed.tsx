@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { v4 as uuid } from "uuid";
+import LazyImage from "../partials/LazyImage";
 
 type Props = {};
 type State = {};
@@ -68,7 +69,7 @@ class ImageFeed extends React.Component<Props, State> {
         // console.log(uuid());
         this.images.push(
           Array(n),
-          <img
+          <LazyImage
             src={`https://source.unsplash.com/1280x720/?${
               searchKeywords[getRandomInt(searchKeywords.length)]
             }/${Math.random()}`}

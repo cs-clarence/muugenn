@@ -29,7 +29,9 @@ class Header extends React.Component<Props, State> {
   render() {
     return (
       <header
-        className={`h-14 bg-blue-300 dark:bg-gray-700 sticky top-0 ${this.state.componentDynamicClass}`}
+        className={`h-14 bg-blue-300 dark:bg-gray-700 sticky top-0 z-50 
+        grid-flow-col-dense transition-opacity duration-150 
+        ${this.state.componentDynamicClass}`}
       >
         <div className="mx-auto container flex-row flex h-full items-center">
           <img src={SiteLogo} className="h-full p-2" alt="site logo" />
