@@ -1,62 +1,63 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SiteLogo from "./site-logo.svg";
-import { debounce } from "lodash";
+import SettingsCog from "../../assets/settings-cog.svg";
+import SettingsPanel from "../SettingsPanel";
+import { throttle } from "lodash";
+import cn from "classnames";
 // import AccountLogo from "./account-logo.svg";
 
 type Props = {};
-type State = {
-  lastScrollPosition: number;
-  componentDynamicClass: string;
-};
 
-class Header extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+let lastScrollPosition = window.scrollY;
 
-    // bind 'this' to methods permanently
-    this.handleScroll = this.handleScroll.bind(this);
+function Header(props: Props) {
+  const [showHeader, setShowHeader] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
 
-    // setup state
-    this.state = {
-      lastScrollPosition: window.scrollY,
-      componentDynamicClass: "opacity-100",
-    };
-  }
-  componentDidMount() {
+  useEffect(() => {
     // setup event listeners
-    window.addEventListener("scroll", debounce(this.handleScroll, 50));
-  }
-  render() {
-    return (
-      <header
-        className={`h-14 bg-blue-300 dark:bg-gray-700 sticky top-0 z-50 
-        grid-flow-col-dense transition-opacity duration-150 
-        ${this.state.componentDynamicClass}`}
-      >
-        <div className="mx-auto container flex-row flex h-full items-center">
+    window.addEventListener(
+      "scroll",
+      throttle(() => {
+        setShowHeader(lastScrollPosition > window.scrollY);
+        lastScrollPosition = window.scrollY;
+      }, 100)
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log(`showSettings: ${showSettings}`);
+  }, [showSettings]);
+
+  return (
+    <header
+      className={cn(
+        `h-14 bg-blue-300 dark:bg-gray-700 sticky top-0 z-40 
+      grid-flow-col-dense transition-opacity duration-150 
+      opacity-50`,
+        { "opacity-100": showHeader }
+      )}
+    >
+      <div className="mx-auto container flex-row flex h-full items-center justify-between">
+        <div className="h-full inline-flex flex-row items-center">
           <img src={SiteLogo} className="h-full p-2" alt="site logo" />
           <p className="font-bold px-2 text-xl">MUUGENN</p>
         </div>
-      </header>
-    );
-  }
-  // private handlers
-  private handleScroll() {
-    if (this.state.lastScrollPosition < window.scrollY) {
-      // console.log("up");
-      this.setState({
-        componentDynamicClass: "opacity-50",
-      });
-    } else {
-      // console.log("down");
-      this.setState({
-        componentDynamicClass: "opacity-100",
-      });
-    }
-    this.setState({
-      lastScrollPosition: window.scrollY,
-    });
-  }
+        <div className="h-full inline-flex flex-row items-center">
+          <img
+            src={SettingsCog}
+            alt="settings cog"
+            className="w-8 mx-3"
+            onClick={() => setShowSettings((prev) => !prev)}
+          />
+        </div>
+        <SettingsPanel
+          show={showSettings}
+          onBack={() => setShowSettings(false)}
+        />
+      </div>
+    </header>
+  );
 }
 
 export { Header as default };
