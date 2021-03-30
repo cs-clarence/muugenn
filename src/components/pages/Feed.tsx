@@ -1,87 +1,67 @@
-import React, { ReactNode } from "react";
+import React, {
+  ReactNode,
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
+} from "react";
 import { v4 as uuid } from "uuid";
 import LazyImage from "../partials/LazyImage";
+import SettingsContext from "../contexts/settings-context";
 
 type Props = {};
-type State = {};
-
-const searchKeywords = [
-  "illustrations",
-  "fashion",
-  "beauty",
-  "nature",
-  "drawings",
-  "graphics",
-  "flowers",
-  "ocean",
-  "anime",
-  "japan",
-  "pets",
-  "cats",
-  "dogs",
-  "tattoo",
-];
 
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
-class ImageFeed extends React.Component<Props, State> {
-  // constructor
-  constructor(props: Props) {
-    super(props);
+function ImageFeed(props: Props) {
+  const settings = useContext(SettingsContext);
+  const [images, setImages] = useState<ReactNode[]>([]);
+  const getImageUrl = useCallback(() => {
+    return encodeURI(
+      `https://source.unsplash.com/${settings.idWidth}x${settings.idHeight}/?${
+        settings.getSearchTerms()[
+          getRandomInt(settings.getSearchTerms().length)
+        ]
+      }/${Math.floor(Math.random() * 1000)}`
+    );
+  }, [settings]);
 
-    // permanently bind 'this' to methods
-    this.fetchImages = this.fetchImages.bind(this);
+  const fetchImages = useCallback(
+    (n: number = 15) => {
+      for (let i = 0; i < n; ++i) {
+        // console.log(uuid());
+        setImages((prev) => {
+          prev.push(
+            Array(n),
+            <LazyImage src={getImageUrl()} alt="unsplash" key={uuid()} />
+          );
+          return [...prev];
+        });
+      }
+    },
+    [getImageUrl]
+  );
 
-    // fetch initial images
-    this.images = [];
-
-    this.fetchImages();
-
-    // handle adding more images for infinite scrolling
+  useEffect(() => {
     window.addEventListener("scroll", (ev: Event) => {
       if (
         window.innerHeight + window.scrollY >=
         document.body.offsetHeight - window.innerHeight / 2
       ) {
-        this.fetchImages();
+        fetchImages();
       }
     });
-  }
+    fetchImages();
+    // eslint-disable-next-line
+  }, []);
 
-  // render method
-  render() {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-3">
-        {this.images}
-      </div>
-    );
-  }
-
-  // private fields
-  private images: ReactNode[];
-
-  // methods
-  public fetchImages(n = 15) {
-    if (this.images) {
-      for (let i = 0; i < n; ++i) {
-        // console.log(uuid());
-        this.images.push(
-          Array(n),
-          <LazyImage
-            src={`https://source.unsplash.com/1280x720/?${
-              searchKeywords[getRandomInt(searchKeywords.length)]
-            }/${Math.random()}`}
-            alt="unsplash"
-            key={uuid()}
-          />
-        );
-      }
-
-      this.forceUpdate();
-    }
-  }
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-3">
+      {images}
+    </div>
+  );
 }
 
 export { ImageFeed as default };

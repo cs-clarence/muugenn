@@ -25,10 +25,6 @@ function Header(props: Props) {
     );
   }, []);
 
-  useEffect(() => {
-    console.log(`showSettings: ${showSettings}`);
-  }, [showSettings]);
-
   return (
     <header
       className={cn(
