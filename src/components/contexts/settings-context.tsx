@@ -1,4 +1,5 @@
-import React, { ReactNode, useState } from "react";
+import { clone, isBoolean, isNumber, isString } from "lodash";
+import React, { ReactNode, useReducer } from "react";
 
 type Source = {
   sourceID: string;
@@ -6,55 +7,18 @@ type Source = {
   toggled: boolean;
   api: string;
 };
-// I think this is better for a reducer function as it contains a lot of
-// methods
-interface ISettingsManager {
-  useImageDimension: boolean;
-  toggleUseImageDimension(param?: boolean): void;
-
-  idWidth: number;
-  setIdWidth(param: number): void;
-
-  idHeight: number;
-  setIdHeight(param: number): void;
-
-  useAspectRatio: boolean;
-  toggleUseAspectRatio(param?: boolean): void;
-
-  arWidth: number;
-  setArWidth(param: number): void;
-
-  arHeight: number;
-  setArHeight(param: number): void;
-
-  maintainAspectRatio: boolean;
-  toggleMaintainAspectRatio(param?: boolean): void;
-
-  useSearchTerms: boolean;
-  toggleUseSearchTerms(param?: boolean): void;
-
-  searchTerms: string[];
-  searchTermsFallBack: string[];
-  addSearchTerm(param: string): void;
-  removeSearchTerm(param: string): void;
-  getSearchTerms(): string[];
-
-  sources: Source[];
-  toggleSource(sourceID: string, toggled?: boolean): void;
-  getSourceByID(souceID: string): Source | null;
-}
-
-const settingsManager: ISettingsManager = {
-  useImageDimension: true,
-  idWidth: 1366,
-  idHeight: 768,
-  useAspectRatio: false,
-  arWidth: 16,
-  arHeight: 9,
-  maintainAspectRatio: true,
-  useSearchTerms: false,
-  searchTerms: [],
-  searchTermsFallBack: [
+export class SettingsState {
+  hasUnsavedChanges = false;
+  useImageDimension = true;
+  idWidth = 1366;
+  idHeight = 768;
+  useAspectRatio = false;
+  arWidth = 16;
+  arHeight = 9;
+  maintainAspectRatio = true;
+  useSearchTerms = false;
+  searchTerms: string[] = [];
+  searchTermsFallBack = [
     "illustrations",
     "fashion",
     "beauty",
@@ -69,170 +33,155 @@ const settingsManager: ISettingsManager = {
     "cats",
     "dogs",
     "tattoo",
-  ],
-  sources: [{ sourceID: "0", displayName: "Unsplash", toggled: true, api: "" }],
-  addSearchTerm(searchTerm: string) {},
-  removeSearchTerm(searchTerm: string) {},
-  toggleUseImageDimension(val?: boolean) {},
-  setIdWidth(w: number) {},
-  setIdHeight(h: number) {},
-  toggleUseAspectRatio: function (val?: boolean) {},
-  setArWidth(w: number) {},
-  setArHeight(h: number) {},
-  toggleUseSearchTerms(val?: boolean) {},
-  toggleMaintainAspectRatio(val?: boolean) {},
-  toggleSource(souceID: string, toggled?: boolean) {},
-  getSourceByID(sourceID: string) {
-    return this.sources[0];
-  },
+  ];
+  sources: Source[] = [
+    { sourceID: "0", displayName: "Unsplash", toggled: true, api: "" },
+  ];
   getSearchTerms() {
-    return [];
-  },
+    if (this.searchTerms.length > 0) return this.searchTerms;
+    return this.searchTermsFallBack;
+  }
+}
+
+export enum SettingsActions {
+  setIdWidth,
+  setIdHeight,
+  setArWidth,
+  setArHeight,
+  toggleUseAspectRatio,
+  toggleMaintainAspectRatio,
+  toggleUseImageDimension,
+  toggleUseSearchTerms,
+  addSearchTerm,
+  removeSearchTerm,
+  saveToLocalStorage,
+}
+
+type Action = {
+  type: SettingsActions;
+  payload?: unknown;
 };
 
-const SettingsContext = React.createContext(settingsManager);
+function getSettingsState() {
+  const state = JSON.parse(localStorage.getItem("muugenn/settings") ?? "{}");
+  return Object.assign(new SettingsState(), state);
+}
+
+function settingsReducer(
+  prevState: SettingsState,
+  action: Action
+): SettingsState {
+  switch (action.type) {
+    case SettingsActions.setIdWidth:
+      if (isNumber(action.payload)) {
+        if (prevState.maintainAspectRatio) {
+          prevState.idHeight =
+            Math.floor(
+              action.payload * (prevState.arHeight / prevState.arWidth)
+            ) || 1;
+        }
+        prevState.idWidth = Math.floor(action.payload) || 1;
+      }
+      break;
+    case SettingsActions.setIdHeight:
+      if (isNumber(action.payload)) {
+        if (prevState.maintainAspectRatio) {
+          prevState.idWidth =
+            Math.floor(
+              action.payload * (prevState.arWidth / prevState.arHeight)
+            ) || 1;
+        }
+        prevState.idHeight = Math.floor(action.payload) || 1;
+      }
+      break;
+    case SettingsActions.setArWidth:
+      if (isNumber(action.payload)) prevState.arWidth = action.payload || 1;
+      break;
+    case SettingsActions.setArHeight:
+      if (isNumber(action.payload)) prevState.arHeight = action.payload || 1;
+      break;
+    case SettingsActions.toggleUseAspectRatio:
+      if (typeof action.payload !== "undefined" && isBoolean(action.payload)) {
+        prevState.useImageDimension = !action.payload;
+        prevState.useAspectRatio = action.payload;
+      } else {
+        prevState.useImageDimension = !prevState.useImageDimension;
+        prevState.useAspectRatio = !prevState.useAspectRatio;
+      }
+      break;
+    case SettingsActions.toggleMaintainAspectRatio:
+      if (typeof action.payload !== "undefined" && isBoolean(action.payload)) {
+        prevState.maintainAspectRatio = action.payload;
+      } else {
+        prevState.maintainAspectRatio = !prevState.maintainAspectRatio;
+      }
+      break;
+    case SettingsActions.toggleUseImageDimension:
+      if (typeof action.payload !== "undefined" && isBoolean(action.payload)) {
+        prevState.useImageDimension = action.payload;
+        prevState.useAspectRatio = !action.payload;
+      } else {
+        prevState.useImageDimension = !prevState.useImageDimension;
+        prevState.useAspectRatio = !prevState.useAspectRatio;
+      }
+      break;
+    case SettingsActions.toggleUseSearchTerms:
+      if (typeof action.payload !== "undefined" && isBoolean(action.payload)) {
+        prevState.useSearchTerms = action.payload;
+      } else {
+        prevState.useSearchTerms = !prevState.useSearchTerms;
+      }
+      break;
+    case SettingsActions.addSearchTerm:
+      if (isString(action.payload)) {
+        if (
+          prevState.searchTerms.indexOf(action.payload) < 0 &&
+          action.payload.length > 0
+        ) {
+          prevState.searchTerms.push(action.payload);
+        }
+      }
+      break;
+    case SettingsActions.removeSearchTerm:
+      if (isString(action.payload)) {
+        const index = prevState.searchTerms.indexOf(action.payload);
+        if (index > -1) {
+          prevState.searchTerms.splice(index, 1);
+        }
+      }
+      break;
+    case SettingsActions.saveToLocalStorage:
+      localStorage.setItem("muugenn/settings", JSON.stringify(prevState));
+      document.location.reload();
+      break;
+    default:
+      throw new Error("Unknown Action");
+  }
+  return clone(prevState);
+}
 
 type Props = {
   children?: ReactNode;
 };
 
+const SettingsContext = React.createContext({
+  state: getSettingsState(),
+  dispatch: (v: Action): void => {},
+});
+
 function SettingsProvider({ children }: Props) {
-  const [useAspectRatio, setUseAspectRatio] = useState(
-    settingsManager.useAspectRatio
-  );
-  const [useImageDimension, setUseImageDimension] = useState(
-    settingsManager.useImageDimension
-  );
-  const [maintainAspectRatio, setMaintainAspectRatio] = useState(
-    settingsManager.maintainAspectRatio
-  );
-  const [arWidth, setArWidth] = useState(settingsManager.arWidth);
-  const [idWidth, setIdWidth] = useState(settingsManager.idWidth);
-  const [arHeight, setArHeight] = useState(settingsManager.arHeight);
-  const [idHeight, setIdHeight] = useState(settingsManager.idHeight);
-  const [searchTerms, setSearchTerms] = useState(settingsManager.searchTerms);
-  const [useSearchTerms, setUseSearchTerms] = useState(
-    settingsManager.useSearchTerms
-  );
-  const [sources, setSources] = useState(settingsManager.sources);
-
-  const reactiveSettingsManager: ISettingsManager = {
-    useImageDimension,
-    toggleUseImageDimension(p?: boolean) {
-      if (typeof p !== "undefined") {
-        setUseImageDimension(p);
-        setUseAspectRatio(!p);
-      } else {
-        setUseImageDimension((v) => !v);
-        setUseAspectRatio((v) => !v);
-      }
-    },
-    useAspectRatio,
-    toggleUseAspectRatio(p?: boolean) {
-      if (typeof p !== "undefined") {
-        setUseAspectRatio(p);
-        setUseImageDimension(!p);
-      } else {
-        setUseAspectRatio((v) => !v);
-        setUseImageDimension((v) => !v);
-      }
-    },
-    useSearchTerms,
-    toggleUseSearchTerms(p?: boolean) {
-      if (typeof p !== "undefined") {
-        setUseSearchTerms(p);
-      } else {
-        setUseSearchTerms((v) => !v);
-      }
-    },
-    maintainAspectRatio,
-    toggleMaintainAspectRatio(p?: boolean) {
-      if (typeof p !== "undefined") {
-        setMaintainAspectRatio(p);
-      } else {
-        setMaintainAspectRatio((v) => !v);
-      }
-    },
-    arWidth,
-    setArWidth,
-    arHeight,
-    setArHeight,
-    idHeight,
-    setIdHeight(h: number) {
-      if (maintainAspectRatio) {
-        setIdWidth(Math.floor(h * (arWidth / arHeight) || 1));
-      }
-
-      setIdHeight(h || 1);
-    },
-    idWidth,
-    setIdWidth(w: number) {
-      if (maintainAspectRatio) {
-        setIdHeight(Math.floor(w * (arHeight / arWidth) || 1));
-      }
-      setIdWidth(w || 1);
-    },
-    searchTerms,
-    addSearchTerm(st: string) {
-      if (searchTerms.indexOf(st) < 0 && st.length > 0) {
-        setSearchTerms((prev) => {
-          prev.push(st);
-          return [...prev];
-        });
-      }
-    },
-    removeSearchTerm(st: string) {
-      setSearchTerms((prev) => {
-        const index = prev.indexOf(st);
-        if (index > -1) {
-          prev.splice(index, 1);
-        }
-        return [...prev];
-      });
-    },
-    getSearchTerms() {
-      if (searchTerms.length && useSearchTerms) {
-        return searchTerms;
-      }
-      return this.searchTermsFallBack;
-    },
-    searchTermsFallBack: settingsManager.searchTermsFallBack,
-    sources,
-    toggleSource(sourceID: string, toggled?: boolean) {
-      setSources((prev) => {
-        for (const el of prev) {
-          if (el.sourceID === sourceID) {
-            if (typeof toggled === "undefined") {
-              el.toggled = !el.toggled;
-            } else {
-              el.toggled = toggled;
-            }
-          }
-        }
-        // for some reason, if the same array is returned,
-        // react wont 'react'
-        // so this solution copies the content of the previous array
-        // to force react to rerender
-        // it could be because this particular array isn't really getting modified
-        //    by this function
-        // the function instead just modifies the some property of an object
-        //    inside the array
-        // so just copy the content of an array to a new array
-        return [...prev];
-      });
-    },
-    getSourceByID(sourceID: string) {
-      for (const source of sources) {
-        if (source.sourceID === sourceID) {
-          return source;
-        }
-      }
-      return null;
-    },
-  };
+  const [state, dispatch] = useReducer(settingsReducer, getSettingsState());
+  function monitorChanges(action: Action) {
+    if (action.type === SettingsActions.saveToLocalStorage) {
+      state.hasUnsavedChanges = false;
+    } else {
+      state.hasUnsavedChanges = true;
+    }
+    dispatch(action);
+  }
 
   return (
-    <SettingsContext.Provider value={reactiveSettingsManager}>
+    <SettingsContext.Provider value={{ state, dispatch: monitorChanges }}>
       {children}
     </SettingsContext.Provider>
   );
