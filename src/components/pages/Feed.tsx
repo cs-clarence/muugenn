@@ -17,7 +17,7 @@ function getRandomInt(max: number) {
 
 const resolutions = [1080, 720, 360, 480, 1440, 2160];
 function getRandomResolution() {
-  return resolutions[Math.round(Math.random() * resolutions.length)];
+  return resolutions[Math.floor(Math.random() * resolutions.length)];
 }
 
 type Props = {};
