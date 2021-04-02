@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import Spinner from "./three-dots.svg";
 import cn from "classnames";
 
-type Props = { src: string; alt: string };
+type Props = { src: string; alt?: string; load?: boolean };
 
 function LazyImage({
   src = "https://myenglishmatters.com/wp-content/uploads/2020/11/placeholder.png",
   alt,
+  load,
 }: Props) {
   const [hideLoader, setHideLoader] = useState(false);
   function handeImageLoad() {
@@ -40,12 +41,14 @@ function LazyImage({
           className="object-cover object-center w-20"
         />
       </div>
-      <img
-        src={src}
-        alt={alt}
-        className="w-full h-full object-cover object-center"
-        onLoad={handeImageLoad}
-      />
+      {load && (
+        <img
+          src={src}
+          alt={alt}
+          className="w-full h-full object-cover object-center"
+          onLoad={handeImageLoad}
+        />
+      )}
     </div>
   );
 }

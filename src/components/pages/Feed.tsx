@@ -7,7 +7,8 @@ import React, {
   useMemo,
 } from "react";
 import { v4 as uuid } from "uuid";
-import LazyImage from "../partials/LazyImage";
+import ImageCard from "../partials/ImageCard";
+import ImageViewer from "../partials/ImageViewer";
 import SettingsContext, { SettingsState } from "../contexts/settings-context";
 import { cloneDeep } from "lodash";
 
@@ -30,6 +31,13 @@ function ImageFeed(props: Props) {
     []
   );
   const [images, setImages] = useState<ReactNode[]>([]);
+  const [viewedImage, setViewedImage] = useState<{ src: string; alt?: string }>(
+    {
+      src: "https://miro.medium.com/max/500/0*-ouKIOsDCzVCTjK-.png",
+      alt: "viewed image",
+    }
+  );
+  const [openViewer, setOpenViewer] = useState(false);
 
   const getImageUrl = useCallback(() => {
     let dimension = "";
@@ -69,7 +77,15 @@ function ImageFeed(props: Props) {
         setImages((prev) => {
           prev.push(
             Array(n),
-            <LazyImage src={getImageUrl()} alt="unsplash" key={uuid()} />
+            <ImageCard
+              src={getImageUrl()}
+              alt="unsplash"
+              key={uuid()}
+              onOpen={(ev) => {
+                setViewedImage(ev);
+                setOpenViewer(true);
+              }}
+            />
           );
           return [...prev];
         });
@@ -97,9 +113,16 @@ function ImageFeed(props: Props) {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-3">
-      {images}
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
+        {images}
+      </div>
+      <ImageViewer
+        src={viewedImage.src}
+        open={openViewer && !!viewedImage.src}
+        onClose={() => setOpenViewer(false)}
+      />
+    </>
   );
 }
 
