@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import cn from "classnames";
 import LazyImage from "../LazyImage";
 
 type Props = {
@@ -7,6 +8,8 @@ type Props = {
   alt?: string;
   onOpen?: (img: { src: string; alt?: string }) => void;
 };
+
+const urlRegex = /https:\/\/images\.unsplash\.com\/photo-\w{13}-\w{12}/;
 
 function ImageCard({ src, alt, onOpen }: Props) {
   const [blobURL, setBlobURL] = useState("");
@@ -16,10 +19,9 @@ function ImageCard({ src, alt, onOpen }: Props) {
     axios({ method: "GET", url: src, responseType: "blob" })
       .then((response) => {
         setBlobURL(URL.createObjectURL(response.data));
-        setImgUrl(response.request?.responseURL);
-        // console.log(
-        //   /photo-\w{13}-\w{12}/[Symbol.match](response.request?.responseURL)
-        // );
+        setImgUrl(
+          urlRegex[Symbol.match](response.request?.responseURL)?.[0] ?? ""
+        );
         setLoadImage(true);
       })
       .catch((error) => {
@@ -30,17 +32,27 @@ function ImageCard({ src, alt, onOpen }: Props) {
 
   return (
     <div
-      className="relative overflow-hidden h-full w-full rounded-lg transform transition-transform duration-150 cursor-pointer hover:shadow-xl hover:scale-105"
+      className={cn(
+        `relative overflow-hidden h-full w-full rounded-lg 
+      transform transition-transform duration-150 cursor-pointer`,
+        { "hover:shadow-xl hover:scale-105": loadImage }
+      )}
       onClick={() => onOpen?.({ src: blobURL, alt })}
     >
       <div
-        className={`absolute bottom-0 bg-white dark:bg-gray-700
+        className={cn(
+          `absolute bottom-0 bg-white dark:bg-gray-700
         w-full h-9 z-30 flex flex-row justify-end items-center px-2 opacity-50
-        transition-opacity hover:opacity-75`}
+        transition-opacity`,
+          { "hover:opacity-75": loadImage }
+        )}
       >
         <span
-          className={`fas fa-expand-arrows-alt fa-lg mx-1 cursor-pointer 
-          transform ease-in-out transition-transform hover:-translate-y-1`}
+          className={cn(
+            `fas fa-expand-arrows-alt fa-lg mx-1 cursor-pointer 
+          transform ease-in-out transition-transform`,
+            { "hover:-translate-y-1": loadImage }
+          )}
           title="view this image"
           onClick={(ev) => {
             onOpen?.({ src: blobURL, alt });
@@ -55,7 +67,7 @@ function ImageCard({ src, alt, onOpen }: Props) {
           <span
             className={`fas fa-external-link-alt fa-lg mx-1 cursor-pointer 
             transform ease-in-out transition-transform hover:-translate-y-1`}
-            title="open link"
+            title="view original image"
           ></span>
         </a>
 

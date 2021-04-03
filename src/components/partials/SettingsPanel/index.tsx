@@ -53,7 +53,7 @@ function SettingsPanel({ show, onBack }: Props) {
           }
         )}
       >
-        <div className="h-14 bg-blue-300 dark:bg-gray-700 sticky top-0">
+        <div className="h-14 bg-blue-300 dark:bg-gray-700 sticky top-0 z-10">
           <div className="container mx-auto h-full text-lg flex flex-row justify-center items-center px-3">
             SETTINGS
             <img

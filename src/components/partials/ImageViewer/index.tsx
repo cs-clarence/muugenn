@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Slider from "./partials/Slider";
 import cn from "classnames";
 import { clamp } from "lodash";
 
@@ -50,16 +49,16 @@ function ImageViewer({ src, open, onClose, alt }: Props) {
                 }
                 title="zoom by -25%"
               ></span>
-              {false && (
-                <div className="h-4 w-44">
-                  <Slider
-                    min={minZoom}
-                    max={maxZoom}
-                    value={zoom}
-                    onChange={setZoom}
-                  />
-                </div>
-              )}
+              <div className="h-4 w-44">
+                <input
+                  type="range"
+                  value={zoom}
+                  min={minZoom}
+                  max={maxZoom}
+                  onChange={(ev) => setZoom(Number(ev.target.value))}
+                  className="w-full"
+                />
+              </div>
               <span
                 className={cn(`fas fa-search-plus mx-2 fa-lg cursor-pointer`, {
                   "pointer-events-none opacity-50": zoom >= maxZoom,
@@ -78,7 +77,7 @@ function ImageViewer({ src, open, onClose, alt }: Props) {
               <span
                 className={`fas fa-redo mx-2 fa-lg cursor-pointer`}
                 onClick={() => {
-                  console.log("rotate");
+                  // console.log("rotate");
                   setRotation((prev) => prev + 90);
                 }}
                 title="rotate by 90 degrees"
