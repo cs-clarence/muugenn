@@ -33,11 +33,12 @@ function ImageCard({ src, alt, onOpen }: Props) {
   return (
     <div
       className={cn(
-        `relative overflow-hidden h-full w-full rounded-lg 
+        `relative overflow-hidden h-full w-full rounded-lg
       transform transition-transform duration-150 cursor-pointer`,
         { "hover:shadow-xl hover:scale-105": loadImage }
       )}
       onClick={() => onOpen?.({ src: blobURL, alt })}
+      style={{ minHeight: "300px" }}
     >
       <div
         className={cn(

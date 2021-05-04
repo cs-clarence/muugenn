@@ -11,6 +11,7 @@ type Props = {
 
 const minZoom = 25;
 const maxZoom = 200;
+const html = document.querySelector("html");
 
 function ImageViewer({ src, open, onClose, alt }: Props) {
   const [zoom, setZoom] = useState(75);
@@ -22,7 +23,10 @@ function ImageViewer({ src, open, onClose, alt }: Props) {
   useEffect(() => {
     setZoom(75);
     setRotation(0);
+
+    if (html) html.style.overflow = open ? "hidden" : "auto";
   }, [open]);
+
   return (
     <>
       {open && (
