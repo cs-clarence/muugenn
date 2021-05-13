@@ -46,7 +46,7 @@ function SettingsGroup({
 
   return (
     <div>
-      <div className="h-8 flex flex-row justify-center items-center relative bg-gray-400 bg-opacity-20 dark:bg-transparent">
+      <div className="h-8 flex flex-row justify-center items-center relative bg-gray-400 bg-opacity-20 dark:bg-opacity-20 dark:bg-transparent">
         <div className="flex flex-row justify-center items-center">
           {groupName}
           {infoText && (
@@ -67,7 +67,7 @@ function SettingsGroup({
         {children &&
           children.map((child, index) => (
             <div
-              className="h-12 bg-gray-500 dark:bg-black bg-opacity-20 px-3 flex flex-row items-center relative"
+              className="h-12 bg-gray-500 dark:bg-black bg-opacity-20 dark:bg-opacity-20 px-3 flex flex-row items-center relative"
               key={index}
             >
               <label htmlFor="#input" className="text-lg">
@@ -108,16 +108,16 @@ function SettingsGroup({
               <form
                 onSubmit={(ev) => {
                   ev.preventDefault();
-                  const entryToRemove = (document.querySelector(
-                    `#${id}`
-                  ) as HTMLElement)?.innerHTML;
+                  const entryToRemove = (
+                    document.querySelector(`#${id}`) as HTMLElement
+                  )?.innerHTML;
 
                   if (entryToRemove) {
                     // console.log(`removing id ${id} : ${entryToRemove}`);
                     onRemoveEntry?.(entryToRemove);
                   }
                 }}
-                className="h-12 bg-gray-500 dark:bg-black bg-opacity-20 px-3 flex flex-row items-center relative"
+                className="h-12 bg-gray-500 dark:bg-black bg-opacity-20 dark:bg-opacity-20 px-3 flex flex-row items-center relative"
                 key={index}
               >
                 <p className="text-lg" id={id}>
@@ -130,7 +130,7 @@ function SettingsGroup({
             );
           })}
         {entries && (
-          <div className="h-12 bg-gray-500 dark:bg-black bg-opacity-20 px-3 flex flex-row items-center relative">
+          <div className="h-12 bg-gray-500 dark:bg-black bg-opacity-20 dark:bg-opacity-20 px-3 flex flex-row items-center relative">
             <input
               type="text"
               min={1}

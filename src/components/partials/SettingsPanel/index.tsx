@@ -27,7 +27,7 @@ function SettingsPanel({ show, onBack }: Props) {
         duration-300
         from-black
         z-50 pointer-events-none transition-opacity`,
-        { "opacity-0": !show }
+        { "opacity-0": !show, "pointer-events-auto": show }
       )}
     >
       <div
@@ -209,6 +209,28 @@ function SettingsPanel({ show, onBack }: Props) {
               >
                 APPLY SETTINGS
               </button>
+            </div>
+            <div className="text-center">
+              Created by{" "}
+              <a
+                href="https://clarencemanuel.netlify.app"
+                className="font-bold"
+                target="_blank"
+                rel="noreferrer noorigin"
+              >
+                Clarence Manuel
+              </a>
+            </div>
+            <div className="text-center">
+              Powered By&nbsp;
+              <a
+                href="https://unsplash.com"
+                className="font-bold"
+                target="_blank"
+                rel="noreferrer noorigin"
+              >
+                Unsplash
+              </a>
             </div>
           </div>
         </div>

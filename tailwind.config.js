@@ -1,18 +1,21 @@
 module.exports = {
+  mode: "jit",
   purge: {
     enabled: process.env.NODE_ENV === "production",
     preserveHtmlElements: true,
     layers: ["components", "utilities", "base"],
     content: [
       "./src/**/*.js",
+      "./src/**/*.html",
       "./src/**/*.jsx",
       "./src/**/*.ts",
       "./src/**/*.tsx",
       "./src/**/*.vue",
       "./src/**/*.ejs",
+      "./public/**/*.html",
     ],
   },
-  darkMode: "media", // or 'media' or 'class'
+  darkMode: "class", // or 'media' or 'class'
   theme: {
     extend: {},
   },

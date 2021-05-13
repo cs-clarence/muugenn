@@ -54,6 +54,7 @@ export enum SettingsActions {
   toggleUseSearchTerms,
   addSearchTerm,
   removeSearchTerm,
+  // toggleDarkMode,
   saveToLocalStorage,
 }
 
@@ -64,6 +65,10 @@ type Action = {
 
 function getSettingsState() {
   const state = JSON.parse(localStorage.getItem("muugenn/settings") ?? "{}");
+  // if (typeof state.darkMode === "undefined") {
+  //   window.matchMedia("(prefers-color-scheme: dark)");
+  //   state.darkMode = true;
+  // }
   return Object.assign(new SettingsState(), state);
 }
 
@@ -101,7 +106,7 @@ function settingsReducer(
       if (isNumber(action.payload)) prevState.arHeight = action.payload || 1;
       break;
     case SettingsActions.toggleUseAspectRatio:
-      if (typeof action.payload !== "undefined" && isBoolean(action.payload)) {
+      if (isBoolean(action.payload)) {
         prevState.useImageDimension = !action.payload;
         prevState.useAspectRatio = action.payload;
       } else {
@@ -110,14 +115,14 @@ function settingsReducer(
       }
       break;
     case SettingsActions.toggleMaintainAspectRatio:
-      if (typeof action.payload !== "undefined" && isBoolean(action.payload)) {
+      if (isBoolean(action.payload)) {
         prevState.maintainAspectRatio = action.payload;
       } else {
         prevState.maintainAspectRatio = !prevState.maintainAspectRatio;
       }
       break;
     case SettingsActions.toggleUseImageDimension:
-      if (typeof action.payload !== "undefined" && isBoolean(action.payload)) {
+      if (isBoolean(action.payload)) {
         prevState.useImageDimension = action.payload;
         prevState.useAspectRatio = !action.payload;
       } else {
@@ -126,7 +131,7 @@ function settingsReducer(
       }
       break;
     case SettingsActions.toggleUseSearchTerms:
-      if (typeof action.payload !== "undefined" && isBoolean(action.payload)) {
+      if (isBoolean(action.payload)) {
         prevState.useSearchTerms = action.payload;
       } else {
         prevState.useSearchTerms = !prevState.useSearchTerms;
@@ -150,6 +155,13 @@ function settingsReducer(
         }
       }
       break;
+    // case SettingsActions.toggleDarkMode:
+    //   if (isBoolean(action.payload)) {
+    //     prevState.darkMode = action.payload;
+    //   } else {
+    //     prevState.darkMode = !prevState.darkMode;
+    //   }
+    //   break;
     case SettingsActions.saveToLocalStorage:
       localStorage.setItem("muugenn/settings", JSON.stringify(prevState));
       document.location.reload();
@@ -160,15 +172,15 @@ function settingsReducer(
   return clone(prevState);
 }
 
-type Props = {
-  children?: ReactNode;
-};
-
 const SettingsContext = React.createContext({
   state: getSettingsState(),
   dispatch: (v: Action): void => {},
 });
 
+interface Props {
+  children?: ReactNode;
+}
+// subscriber abstraction
 function SettingsProvider({ children }: Props) {
   const [state, dispatch] = useReducer(settingsReducer, getSettingsState());
   function monitorChanges(action: Action) {
