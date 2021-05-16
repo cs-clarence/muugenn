@@ -164,6 +164,7 @@ function settingsReducer(
     //   break;
     case SettingsActions.saveToLocalStorage:
       localStorage.setItem("muugenn/settings", JSON.stringify(prevState));
+      window.scrollTo({ top: 0, behavior: "smooth" });
       document.location.reload();
       break;
     default:

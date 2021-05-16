@@ -10,12 +10,16 @@ type Props = {};
 
 let lastScrollPosition = window.scrollY;
 const html = document.querySelector("html");
+const result = window.matchMedia("(prefers-color-scheme: dark)");
+const darkModeInitial = localStorage.getItem("darkMode");
 
 function Header(props: Props) {
   const [showHeader, setShowHeader] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  const result = window.matchMedia("(prefers-color-scheme: dark)");
-  const [darkMode, setDarkMode] = useState(result.matches);
+
+  const [darkMode, setDarkMode] = useState(
+    darkModeInitial !== null ? darkModeInitial === "true" : result.matches
+  );
 
   useEffect(() => {
     // setup event listeners
@@ -47,13 +51,30 @@ function Header(props: Props) {
     >
       <div className="mx-auto container flex-row flex h-full items-center justify-between">
         <div className="h-full inline-flex flex-row items-center">
-          <img src={SiteLogo} className="h-full p-2" alt="site logo" />
-          <p className="font-bold px-2 text-xl">MUUGENN</p>
+          <img
+            src={SiteLogo}
+            className="h-full p-2 cursor-pointer"
+            alt="site logo"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
+          <p
+            className="font-bold px-2 text-xl cursor-pointer"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            MUUGENN
+          </p>
         </div>
         <div className="h-full inline-flex flex-row items-center">
           <div
             onClick={() => {
-              setDarkMode((last) => !last);
+              setDarkMode((last) => {
+                localStorage.setItem("darkMode", (!last).toString());
+                return !last;
+              });
             }}
             className={cn(
               `border-2 border-solid border-black bg-black bg-opacity-50 dark:bg-opacity-50 dark:bg-white w-16 h-8 rounded-full relative`,
@@ -82,7 +103,12 @@ function Header(props: Props) {
           <img
             src={SettingsCog}
             alt="settings cog"
-            className="w-8 mx-3"
+            className={cn(
+              "w-8 mx-3 transition-transform transform active:animate-pulse",
+              {
+                "-rotate-180": showSettings,
+              }
+            )}
             style={{ filter: darkMode ? "inherit" : "invert(100%)" }}
             onClick={() => setShowSettings((prev) => !prev)}
           />
