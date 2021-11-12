@@ -20,7 +20,7 @@ function ImageCard({ src, alt, onOpen }: Props) {
       .then((response) => {
         setBlobURL(URL.createObjectURL(response.data));
         setImgUrl(
-          urlRegex[Symbol.match](response.request?.responseURL)?.[0] ?? ""
+          urlRegex[Symbol.match](response.request?.responseURL)?.[0] ?? "",
         );
         setLoadImage(true);
       })
@@ -34,9 +34,9 @@ function ImageCard({ src, alt, onOpen }: Props) {
     <div
       className={cn(
         `relative overflow-hidden h-full w-full rounded-lg
-        transition-all
-      transform duration-500 cursor-pointer`,
-        { "hover:shadow-xl hover:scale-105": loadImage }
+        transition-transform
+        transform duration-500 cursor-pointer`,
+        { "hover:shadow-xl hover:scale-105": loadImage },
       )}
       onClick={() => onOpen?.({ src: blobURL, alt })}
       style={{
@@ -49,14 +49,14 @@ function ImageCard({ src, alt, onOpen }: Props) {
           `absolute bottom-0 bg-white dark:bg-gray-700
         w-full h-9 z-30 flex flex-row justify-end items-center px-2 opacity-50
         transition-opacity`,
-          { "hover:opacity-75": loadImage }
+          { "hover:opacity-75": loadImage },
         )}
       >
         <span
           className={cn(
-            `fas fa-expand-arrows-alt fa-lg mx-1 cursor-pointer 
+            `fas fa-expand-arrows-alt fa-lg mx-1 cursor-pointer
           transform ease-in-out transition-transform`,
-            { "hover:-translate-y-1": loadImage }
+            { "hover:-translate-y-1": loadImage },
           )}
           title="view this image"
           onClick={(ev) => {
@@ -70,7 +70,7 @@ function ImageCard({ src, alt, onOpen }: Props) {
           onClick={(ev) => ev.stopPropagation()}
         >
           <span
-            className={`fas fa-external-link-alt fa-lg mx-1 cursor-pointer 
+            className={`fas fa-external-link-alt fa-lg mx-1 cursor-pointer
             transform ease-in-out transition-transform hover:-translate-y-1`}
             title="view original image"
           ></span>
@@ -78,7 +78,7 @@ function ImageCard({ src, alt, onOpen }: Props) {
 
         <a href={blobURL} download onClick={(ev) => ev.stopPropagation()}>
           <span
-            className={`fas fa-download fa-lg mx-1 cursor-pointer 
+            className={`fas fa-download fa-lg mx-1 cursor-pointer
             transform ease-in-out transition-transform hover:-translate-y-1`}
             title="download"
           ></span>

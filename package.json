@@ -22,9 +22,9 @@
     "rs:start": "react-scripts start",
     "rs:build": "react-scripts build",
     "rs:test": "react-scripts test",
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
+    "start": "npx craco start",
+    "build": "npx craco build",
+    "test": "npx craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

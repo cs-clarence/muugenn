@@ -22,12 +22,12 @@ function SettingsPanel({ show, onBack }: Props) {
   return createPortal(
     <div
       className={cn(
-        `fixed w-full h-full 
+        `fixed w-full h-full
         bg-gradient-to-l
         duration-300
         from-black
         z-50 pointer-events-none transition-opacity`,
-        { "opacity-0": !show, "pointer-events-auto": show }
+        { "opacity-0": !show, "pointer-events-auto": show },
       )}
     >
       <div
@@ -50,7 +50,7 @@ function SettingsPanel({ show, onBack }: Props) {
           "overflow-auto",
           {
             "translate-x-full": !show,
-          }
+          },
         )}
       >
         <div className="h-14 bg-blue-300 dark:bg-gray-700 sticky top-0 z-10">
@@ -197,10 +197,10 @@ function SettingsPanel({ show, onBack }: Props) {
             <div className="w-full flex flex-row justify-center my-8">
               <button
                 className={cn(
-                  `p-2 bg-green-300 dark:bg-blue-500 rounded-md w-40 
-              hover:shadow-lg transition-shadow focus:outline-none 
+                  `p-2 bg-green-300 dark:bg-blue-500 rounded-md w-40
+              hover:shadow-lg transition-shadow focus:outline-none
               disabled:opacity-25
-              `
+              `,
                 )}
                 onClick={() =>
                   dispatch({ type: SettingsActions.saveToLocalStorage })
@@ -236,7 +236,7 @@ function SettingsPanel({ show, onBack }: Props) {
         </div>
       </div>
     </div>,
-    document.querySelector("#root") as HTMLElement
+    document.querySelector("#root") as HTMLElement,
   );
 }
 

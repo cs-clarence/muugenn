@@ -30,19 +30,24 @@ function ImageViewer({ src, open, onClose, alt }: Props) {
   return (
     <div
       className={cn(
-        `fixed top-0 left-0 bg-white dark:bg-black bg-opacity-80 dark:bg-opacity-80 w-full h-full z-50 transform transition-all scale-0 opacity-100`,
-        { "scale-100": open, "opacity-0": !open }
+        `fixed top-0 left-0 bg-white dark:bg-black bg-opacity-80
+        dark:bg-opacity-80 w-full h-full z-50
+        transform transition-transform scale-0 opacity-100`,
+        { "scale-100": open, "opacity-0": !open },
       )}
     >
       <img
         src={src}
         alt={alt}
-        className={`object-contain w-full h-full object-center absolute 
+        className={`object-contain w-full h-full object-center absolute
             transition-transform transform ease-in-out`}
         style={imageStyle}
       ></img>
       <div className="absolute w-full h-full flex-col flex justify-end items-center">
-        <div className="h-12 bg-white dark:bg-gray-800 inline-flex flex-row justify-center items-center p-3 rounded-lg">
+        <div
+          className="h-12 bg-white dark:bg-gray-800 inline-flex
+                        flex-row justify-center items-center p-3 rounded-lg"
+        >
           <span
             className={cn(`fas fa-search-minus mx-2 fa-lg cursor-pointer`, {
               "pointer-events-none opacity-50": zoom <= minZoom,

@@ -18,7 +18,7 @@ function Header(props: Props) {
   const [showSettings, setShowSettings] = useState(false);
 
   const [darkMode, setDarkMode] = useState(
-    darkModeInitial !== null ? darkModeInitial === "true" : result.matches
+    darkModeInitial !== null ? darkModeInitial === "true" : result.matches,
   );
 
   useEffect(() => {
@@ -28,7 +28,7 @@ function Header(props: Props) {
       throttle(() => {
         setShowHeader(lastScrollPosition > window.scrollY);
         lastScrollPosition = window.scrollY;
-      }, 100)
+      }, 100),
     );
   }, []);
 
@@ -43,10 +43,10 @@ function Header(props: Props) {
   return (
     <header
       className={cn(
-        `h-14  dark:bg-gray-700 bg-blue-300 sticky top-0 z-40 
-      grid-flow-col-dense transition-opacity duration-150 
+        `h-14  dark:bg-gray-700 bg-blue-300 sticky top-0 z-40
+      grid-flow-col-dense transition-opacity duration-150
       opacity-50`,
-        { "opacity-100": showHeader }
+        { "opacity-100": showHeader },
       )}
     >
       <div className="mx-auto container flex-row flex h-full items-center justify-between">
@@ -78,7 +78,7 @@ function Header(props: Props) {
             }}
             className={cn(
               `border-2 border-solid border-black bg-black bg-opacity-50 dark:bg-opacity-50 dark:bg-white w-16 h-8 rounded-full relative`,
-              { "border-white": darkMode }
+              { "border-white": darkMode },
             )}
           >
             <div
@@ -91,7 +91,7 @@ function Header(props: Props) {
                 translate-x-0
                 flex justify-center items-center
                 `,
-                { "translate-x-full bg-white": darkMode }
+                { "translate-x-full bg-white": darkMode },
               )}
             >
               {(darkMode && (
@@ -107,7 +107,7 @@ function Header(props: Props) {
               "w-8 mx-3 transition-transform transform active:animate-pulse",
               {
                 "-rotate-180": showSettings,
-              }
+              },
             )}
             style={{ filter: darkMode ? "inherit" : "invert(100%)" }}
             onClick={() => setShowSettings((prev) => !prev)}
